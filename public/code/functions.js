@@ -5,3 +5,18 @@ function addV(a, b)
     o.push(a[i]+b[i]);
   return o;
 }
+
+function onCanvas(pos)
+{
+  let xIn = (pos[0] > 0 && pos[0] < screen_dims[0]);
+  let yIn = (pos[1] > 0 && pos[1] < screen_dims[1]);
+  return (xIn && yIn);
+}
+
+function magSquared(vec) {
+  let s = 0;
+  for (var i = 0; i < vec.length; i++) {
+    s += vec[i]*vec[i];
+  }
+  return s;
+}

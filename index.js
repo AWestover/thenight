@@ -1,5 +1,4 @@
-// behind the scenes of the game
-let express = require('express'); // needs this library
+let express = require('express');
 let app = express();
 let port = process.env.PORT || 3000;  // what port to open it on must have the option to be
 // chosen by server if you want it to be heroku compatible, also does need the default
@@ -22,7 +21,7 @@ console.log("server running");
 io.sockets.on('connection', newConnection);  // when you get a connection do this
 
 let playersConnected = [];
-let data = {}; // the data, compute collisions from this
+let playerData = {}; // the data, compute collisions from this
 const maxSLength = 15;
 
 function newConnection(socket) {
@@ -38,7 +37,6 @@ function newConnection(socket) {
   let name;
 
   socket.on('named', function(data) {
-    // later do not allow duplicates
     name = data["name"];
 
     if (!name)
@@ -50,22 +48,34 @@ function newConnection(socket) {
     	name = name + Math.floor(Math.random()*10);
 
     console.log(name + " added" );
+    console.log(playersConnected);
+    console.log(playerData);
     playersConnected.push(name);
+    playerData[name] = {"pos":[0,0], "vel":[0,0]};
 
     socket.emit('nameChosen', name);
   });
 
-  socket.on('updateData', function(data) {
-    console.log(data);
-    console.log("updating data");
+  socket.on('sendData', function(data) {
+    if (name) {
+      playerData[name] = data;
+    }
   });
 
-  socket.on('getData', function(data) {
-    socket.emit('gotData', userData);
+  socket.on('requestData', function() {
+    socket.emit('requestedData', playerData);
   });
 
-  socket.on('disconnect', function(data) {
-    console.log("disconnect");
+  socket.on('disconnect', function() {
+    let nIdx = playersConnected.indexOf(name);
+    if (name && nIdx != -1) {
+      playersConnected.splice(nIdx, 1);
+      console.log("disconnect by "+name);
+      delete playerData[name];
+    }
+    else {
+      console.log("disconnect by unnamed user");
+    }
   });
 
 }
