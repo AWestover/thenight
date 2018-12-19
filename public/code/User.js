@@ -2,6 +2,7 @@ class User {
   constructor() {
     this.pos = [0, 0];
     this.vel = [0, 0];
+    this.acc = [0, 0];
   }
   zeroVel() {
     this.vel[0] = 0;
@@ -20,19 +21,22 @@ class User {
 
 function renderUser(sketch, pos, vel) {
   sketch.fill(255,255,255);
+  let thetaStart = 0;
   if (magSquared(vel) == 0) {
     sketch.ellipse(pos[0],pos[1],userStillRadius,userStillRadius);
-    sketch.fill(0,150,0);
-    sketch.ellipse(pos[0],pos[1],10,10);
   }
   else {
-    let thetaStart = Math.atan(vel[1]/vel[0]); // note, its ok to divide by 0, atan(Infinity) = pi/2
+    thetaStart = Math.atan(vel[1]/vel[0]); // note, its ok to divide by 0, atan(Infinity) = pi/2
     if (vel[0] < 0){
       thetaStart += Math.PI;
     }
-    sketch.arc(pos[0],pos[1],userMoveRadius,userMoveRadius,thetaStart-userMoveTheta,thetaStart+userMoveTheta);
-    sketch.fill(0,0,150);
-    let dPos = [-Math.cos(thetaStart)*userOffset, -Math.sin(thetaStart)*userOffset];
-    sketch.ellipse(pos[0]+dPos[0],pos[1]+dPos[1],10,10);
+    let dPos = [-Math.cos(thetaStart)*userSize, -Math.sin(thetaStart)*userSize];
+    sketch.arc(pos[0]-dPos[0]/2,pos[1]-dPos[1]/2,userMoveRadius,userMoveRadius,thetaStart-userMoveTheta,thetaStart+userMoveTheta);
   }
+  sketch.fill(0,0,150);
+  sketch.push();
+  sketch.translate(pos[0],pos[1]);
+  sketch.rotate(thetaStart);
+  sketch.image(dogTopPic,0,0,userSize,userSize);
+  sketch.pop();
 }

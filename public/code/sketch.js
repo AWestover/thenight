@@ -8,12 +8,18 @@ let user;
 let playerData = {};
 let rDots = [];
 
+sketch.preload = function() {
+  dogTopPic = sketch.loadImage("images/dogTop.png");
+}
+
 sketch.setup = function()
 {
   screen_dims = [sketch.windowWidth, sketch.windowHeight];
   canvas = sketch.createCanvas(screen_dims[0], screen_dims[1]);
   sketch.textAlign(sketch.CENTER);
   sketch.frameRate(10);
+
+  sketch.imageMode(sketch.CENTER); // SUPER IMPORTANT
 
   socket = io.connect();
   socket.on('nameChosen', sketch.handleNameChosen);
@@ -30,6 +36,7 @@ sketch.setup = function()
 
 sketch.draw = function() {
   sketch.background(0,0,0);
+  sketch.noStroke();
   sketch.push();
   sketch.translate(screen_dims[0]/2, screen_dims[1]/2);
   sketch.translate(-user.pos[0], -user.pos[1]);
