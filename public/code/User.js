@@ -27,7 +27,7 @@ function renderUser(sketch, pos, vel) {
   }
   else {
     let thetaStart = Math.atan(vel[1]/vel[0]); // note, its ok to divide by 0, atan(Infinity) = pi/2
-    if ((vel[1] <= 0 && vel[0] <= 0) || (vel[0]<=0 && vel[1]>=0)){
+    if (vel[0] < 0){
       thetaStart += Math.PI;
     }
     sketch.arc(pos[0],pos[1],userMoveRadius,userMoveRadius,thetaStart-userMoveTheta,thetaStart+userMoveTheta);

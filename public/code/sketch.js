@@ -6,6 +6,7 @@
 let myp5 = new p5(function(sketch) {
 let user;
 let playerData = {};
+let rDots = [];
 
 sketch.setup = function()
 {
@@ -21,6 +22,10 @@ sketch.setup = function()
   socket.emit("named", {"name": "alek"}); // you can choose a name later...
 
   user = new User();
+
+  for (var i = 0; i < 60; i++) {
+    rDots.push([gridSize*(2*Math.random()-1),gridSize*(2*Math.random()-1)])
+  }
 }
 
 sketch.draw = function() {
@@ -34,6 +39,11 @@ sketch.draw = function() {
       renderUser(sketch,playerData[unm].pos,playerData[unm].vel);
   }
   renderUser(sketch,user.pos,user.vel);
+
+  sketch.fill(0,0,0);
+  for (var i = 0; i < rDots.length; i++) {
+    sketch.ellipse(rDots[i][0],rDots[i][1],10,10);
+  }
 
   // process movement requests
   user.zeroVel();
