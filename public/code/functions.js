@@ -38,8 +38,10 @@ function rotateVec(vec, th) {
 }
 
 function setMag(vec, magn) {
-  if (magSquared(vec) == 0)
+  if (magSquared(vec) == 0 && magn != 0)
     return [0.1,0];
+  else if (magn == 0)
+    return [0, 0];
   else
     return scalarMult(vec, magn/mag(vec));
 }

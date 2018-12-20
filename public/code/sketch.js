@@ -95,52 +95,33 @@ sketch.handleNameChosen  = function(data) {
 }
 
 sketch.handleKeysDown = function() {
-  // let tAcc = [0, 0];
-  // if (sketch.keyIsDown(sketch.LEFT_ARROW) || sketch.keyIsDown(keyCodes['a']))
-  //   tAcc[0] = -accelerationRate;
-  // else if (sketch.keyIsDown(sketch.RIGHT_ARROW) || sketch.keyIsDown(keyCodes['d']))
-  //   tAcc[0] = accelerationRate;
-  // if (sketch.keyIsDown(sketch.UP_ARROW) || sketch.keyIsDown(keyCodes['w']))
-  //   tAcc[1] = -accelerationRate;
-  // else if (sketch.keyIsDown(sketch.DOWN_ARROW) || sketch.keyIsDown(keyCodes['s']))
-  //   tAcc[1] = accelerationRate;
-
-  // if (magSquared(tAcc) != 0)
-    // user.acc = tAcc;
-
   if (sketch.keyIsDown(sketch.LEFT_ARROW) || sketch.keyIsDown(keyCodes['a']))
     user.vel = rotateVec(user.vel, -rotateRate);
   else if (sketch.keyIsDown(sketch.RIGHT_ARROW) || sketch.keyIsDown(keyCodes['d']))
     user.vel = rotateVec(user.vel, rotateRate);
 
-  if (sketch.keyIsDown(sketch.UP_ARROW) || sketch.keyIsDown(keyCodes['w'])) {
+  if (sketch.keyIsDown(sketch.UP_ARROW) || sketch.keyIsDown(keyCodes['w']))
     user.vel = setMag(user.vel, Math.min(mag(user.vel)+accelerationRate, terminalVel));
-  }
-  else if (sketch.keyIsDown(sketch.DOWN_ARROW) || sketch.keyIsDown(keyCodes['s'])) {
-    if (mag(user.vel)*0.9 < 1)
-      user.zeroVel();
-    else
-      user.vel = setMag(user.vel, Math.max(0,mag(user.vel)-accelerationRate));
-  }
-
+  else if (sketch.keyIsDown(sketch.DOWN_ARROW) || sketch.keyIsDown(keyCodes['s']))
+    user.vel = setMag(user.vel, Math.max(0,mag(user.vel)-accelerationRate));
 };
 
 sketch.handleTilted = function()
 {
   let threshold = 10;
-  let accels = [[accelerationRate, 0], [-accelerationRate, 0], [0, accelerationRate], [0, -accelerationRate]];
+  let tilted = false;
   if (sketch.deviceOrientation == "landscape")
-      accels = [[0, -accelerationRate], [0, accelerationRate], [accelerationRate, 0], [-accelerationRate, 0]];
+    tilted = true;
 
-  if (angles[2] < -threshold)
-    user.acc = accels[0];
-  else if (angles[2] > threshold)
-    user.acc = accels[1];
+  if ((angles[2] < -threshold && !tilted) || (angles[1] < -threshold && tilted))
+    user.vel = rotateVec(user.vel, -rotateRate);
+  else if ((angles[2] > threshold && !tilted) || (angles[1] > threshold && tilted))
+    user.vel = rotateVec(user.vel, rotateRate);
 
-  if (angles[1] < -threshold)
-    user.acc = accels[2];
-  else if (angles[1] > threshold)
-    user.acc = accels[3];
+  if ((angles[1] < -threshold && !tilted) || (angles[2] < -threshold && tilted))
+    user.vel = setMag(user.vel, Math.min(mag(user.vel)+accelerationRate, terminalVel));
+  else if ((angles[1] > threshold && !tilted) || (angles[2] > threshold && tilted))
+    user.vel = setMag(user.vel, Math.max(0,mag(user.vel)-accelerationRate));
 };
 
 sketch.touchStarted = function()
