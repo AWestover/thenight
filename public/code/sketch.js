@@ -9,7 +9,7 @@ let playerData = {};
 let rDots = [];
 
 sketch.preload = function() {
-  dogTopPic = sketch.loadImage("images/dogTop.png");
+  dogTopPic = sketch.loadImage("images/sheepTop.png");
 }
 
 sketch.setup = function()
