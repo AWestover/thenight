@@ -8,6 +8,18 @@ class User {
     this.vel[0] = 0;
     this.vel[1] = 0;
   }
+  zeroAcc() {
+    this.acc[0] = 0;
+    this.acc[1] = 0;
+  }
+  addVel() {
+    this.pos = addV(this.pos, this.vel);
+  }
+  addAcc() {
+    this.vel = addV(this.vel, this.acc);
+    if (magSquared(this.vel) >= terminalVelSquared)
+      this.vel = setMag(this.vel, terminalVel);
+  }
   updateView(last_pos, current_pos)
   {
     this.vel = [last_pos[0]-current_pos[0], last_pos[1]-current_pos[1]];

@@ -20,3 +20,26 @@ function magSquared(vec) {
   }
   return s;
 }
+
+function mag(vec) {
+  return Math.sqrt(magSquared(vec));
+}
+
+function scalarMult(vec, k){
+  let o = [];
+  for (var i in vec) {
+    o.push(k*vec[i]);
+  }
+  return o;
+}
+
+function rotateVec(vec, th) {
+  return [vec[0]*Math.cos(th)-vec[1]*Math.sin(th), vec[0]*Math.sin(th)+vec[1]*Math.cos(th)];
+}
+
+function setMag(vec, magn) {
+  if (magSquared(vec) == 0)
+    return [0.1,0];
+  else
+    return scalarMult(vec, magn/mag(vec));
+}

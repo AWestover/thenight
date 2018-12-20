@@ -15,6 +15,7 @@ sketch.preload = function() {
 sketch.setup = function()
 {
   screen_dims = [sketch.windowWidth, sketch.windowHeight];
+  maxDistSquared = magSquared(screen_dims)/4;
   canvas = sketch.createCanvas(screen_dims[0], screen_dims[1]);
   sketch.textAlign(sketch.CENTER);
   sketch.frameRate(10);
@@ -47,13 +48,21 @@ sketch.draw = function() {
   }
   renderUser(sketch,user.pos,user.vel);
 
+  if (magSquared(user.acc) != 0)
+    user.addAcc();
+
+  if (magSquared(user.vel) != 0)
+    user.addVel();
+
+  console.log(user.vel);
+
   sketch.fill(0,0,0);
   for (var i = 0; i < rDots.length; i++) {
     sketch.ellipse(rDots[i][0],rDots[i][1],10,10);
   }
 
   // process movement requests
-  user.zeroVel();
+  user.zeroAcc();
   sketch.handleKeysDown();
   if(accelerometerWanted)
     sketch.handleTilted();
@@ -86,50 +95,61 @@ sketch.handleNameChosen  = function(data) {
 }
 
 sketch.handleKeysDown = function() {
-  let keyD = 30;
-  let tVel = [0, 0];
-  if (sketch.keyIsDown(sketch.LEFT_ARROW) || sketch.keyIsDown(keyCodes['a']))
-    tVel[0] = keyD;
-  else if (sketch.keyIsDown(sketch.RIGHT_ARROW) || sketch.keyIsDown(keyCodes['d']))
-    tVel[0] = -keyD;
-  if (sketch.keyIsDown(sketch.UP_ARROW) || sketch.keyIsDown(keyCodes['w']))
-    tVel[1] = keyD;
-  else if (sketch.keyIsDown(sketch.DOWN_ARROW) || sketch.keyIsDown(keyCodes['s']))
-    tVel[1] = -keyD;
+  // let tAcc = [0, 0];
+  // if (sketch.keyIsDown(sketch.LEFT_ARROW) || sketch.keyIsDown(keyCodes['a']))
+  //   tAcc[0] = -accelerationRate;
+  // else if (sketch.keyIsDown(sketch.RIGHT_ARROW) || sketch.keyIsDown(keyCodes['d']))
+  //   tAcc[0] = accelerationRate;
+  // if (sketch.keyIsDown(sketch.UP_ARROW) || sketch.keyIsDown(keyCodes['w']))
+  //   tAcc[1] = -accelerationRate;
+  // else if (sketch.keyIsDown(sketch.DOWN_ARROW) || sketch.keyIsDown(keyCodes['s']))
+  //   tAcc[1] = accelerationRate;
 
-  if (magSquared(tVel) != 0)
-    user.updateView(user.pos, addV(user.pos, tVel));
+  // if (magSquared(tAcc) != 0)
+    // user.acc = tAcc;
+
+  if (sketch.keyIsDown(sketch.LEFT_ARROW) || sketch.keyIsDown(keyCodes['a']))
+    user.vel = rotateVec(user.vel, -rotateRate);
+  else if (sketch.keyIsDown(sketch.RIGHT_ARROW) || sketch.keyIsDown(keyCodes['d']))
+    user.vel = rotateVec(user.vel, rotateRate);
+
+  if (sketch.keyIsDown(sketch.UP_ARROW) || sketch.keyIsDown(keyCodes['w'])) {
+    user.vel = setMag(user.vel, Math.min(mag(user.vel)+accelerationRate, terminalVel));
+  }
+  else if (sketch.keyIsDown(sketch.DOWN_ARROW) || sketch.keyIsDown(keyCodes['s'])) {
+    if (mag(user.vel)*0.9 < 1)
+      user.zeroVel();
+    else
+      user.vel = setMag(user.vel, Math.max(0,mag(user.vel)-accelerationRate));
+  }
+
 };
 
 sketch.handleTilted = function()
 {
-  let rD = 20;
   let threshold = 10;
-  let dvs = [[rD, 0], [-rD, 0], [0, rD], [0, -rD]];
+  let accels = [[accelerationRate, 0], [-accelerationRate, 0], [0, accelerationRate], [0, -accelerationRate]];
   if (sketch.deviceOrientation == "landscape")
-      dvs = [[0, -rD], [0, rD], [rD, 0], [-rD, 0]];
+      accels = [[0, -accelerationRate], [0, accelerationRate], [accelerationRate, 0], [-accelerationRate, 0]];
 
   if (angles[2] < -threshold)
-    user.updateView(user.pos, addV(user.pos, dvs[0]));
+    user.acc = accels[0];
   else if (angles[2] > threshold)
-    user.updateView(user.pos, addV(user.pos, dvs[1]));
+    user.acc = accels[1];
 
   if (angles[1] < -threshold)
-    user.updateView(user.pos, addV(user.pos, dvs[2]));
+    user.acc = accels[2];
   else if (angles[1] > threshold)
-    user.updateView(user.pos, addV(user.pos, dvs[3]));
+    user.acc = accels[3];
 };
 
 sketch.touchStarted = function()
 {
-  last_down = [sketch.mouseX, sketch.mouseY];
-  isDown = true;
-};
-
-sketch.touchEnded = function()
-{
-  if (event.type == "touchend" || (event.type == "mouseup" && (!sketch.deviceOrientation || sketch.deviceOrientation == "undefined")))
-    isDown = false;
+  let tAcc = [sketch.mouseX - screen_dims[0]/2, sketch.mouseY - screen_dims[1]/2];
+  let magMultiplier = Math.sqrt(terminalVelSquared / maxDistSquared);
+  tAcc[0] = tAcc[0]*magMultiplier;
+  tAcc[1] = tAcc[1]*magMultiplier;
+  user.acc = tAcc;
 };
 
 });
