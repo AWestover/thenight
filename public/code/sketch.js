@@ -18,7 +18,7 @@ sketch.setup = function()
   maxDistSquared = magSquared(screen_dims)/4;
   canvas = sketch.createCanvas(screen_dims[0], screen_dims[1]);
   sketch.textAlign(sketch.CENTER);
-  sketch.frameRate(10);
+  sketch.frameRate(50);
 
   sketch.imageMode(sketch.CENTER); // SUPER IMPORTANT
 
@@ -30,12 +30,16 @@ sketch.setup = function()
 
   user = new User();
 
-  for (var i = 0; i < 60; i++) {
+  for (var i = 0; i < 4000; i++) {
     rDots.push([gridSize*(2*Math.random()-1),gridSize*(2*Math.random()-1)])
   }
 }
 
 sketch.draw = function() {
+  if (sketch.random() < 0.01)
+  {
+    console.log(sketch.frameRate());
+  }
   sketch.background(0,0,0);
   sketch.noStroke();
   sketch.push();
@@ -54,9 +58,9 @@ sketch.draw = function() {
   if (magSquared(user.vel) != 0)
     user.addVel();
 
-  console.log(user.vel);
+  // console.log(user.vel);
 
-  sketch.fill(0,0,0);
+  sketch.fill(0,0,100);
   for (var i = 0; i < rDots.length; i++) {
     sketch.ellipse(rDots[i][0],rDots[i][1],10,10);
   }

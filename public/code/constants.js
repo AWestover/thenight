@@ -17,9 +17,9 @@ const userStillRadius = 200; // radius of circle when not moving
 const userMoveRadius = 900; // radius of the sector shown when moving
 const userMoveTheta = Math.PI/8; // cone is plus or minus this from angle
 
-const terminalVelSquared = 200;
+const terminalVelSquared = 4;
 const terminalVel = Math.sqrt(terminalVelSquared);
-const accelerationRate = 0.5;
-const rotateRate = 0.1;
+const accelerationRate = 0.2;
+const rotateRate = 0.05;
 
 let dogTopPic;
